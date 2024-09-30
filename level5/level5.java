@@ -1,4 +1,6 @@
-class Level5 {
+package level5;
+
+class level5 {
   public static void main(String[] args) {
     String name = "Jinay";
     int age = 15;
