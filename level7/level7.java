@@ -1,5 +1,7 @@
+package level7;
+
 class Level7 {
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         int p = 11;
         int q = 3;
         int n = p * q;
