@@ -72,11 +72,11 @@ public class BankAccount {
   boolean transferTo(double amount, BankAccount targetAccount) {
     if (amount >= 0 && withdraw(amount)) {
       targetAccount.deposit(amount);
-      log += "\t" + genTimestamp() + " Transfer [$" + amount + " to account " + targetAccount.acctNum + "]\n";
-      log += "\t" + genTimestamp() + " Transfer [$" + amount + " received from account " + acctNum + "]\n";
+      log += "\t" + genTimestamp() + "  Transfer [$" + amount + " to account " + targetAccount.acctNum + "]\n";
+      log += "\t" + genTimestamp() + "  Transfer [$" + amount + " received from account " + acctNum + "]\n";
       return true;
     }
-    log += "\t" + genTimestamp() + " Transfer Failed [$" + amount + " to account " + targetAccount.acctNum + "]\n";
+    log += "\t" + genTimestamp() + "  Transfer Failed [$" + amount + " to account " + targetAccount.acctNum + "]\n";
     return false;
   }
 
@@ -137,8 +137,9 @@ public class BankAccount {
 
   /***************************** Generators *****************************/
   int genAcctNum(int length) {
-    Random randomNumberGenerator = new Random();
-    return randomNumberGenerator.nextInt((int) Math.pow(10, length)) + 1;
+    int min = (int) Math.pow(10, length - 1);
+    int max = (int) Math.pow(10, length);
+    return (int) (min + (Math.random() * (max - min)));
   }
 
   String genPswd(int length) {

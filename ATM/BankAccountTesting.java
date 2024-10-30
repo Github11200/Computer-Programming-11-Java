@@ -1,6 +1,6 @@
 package ATM;
 
-public class Testing {
+public class BankAccountTesting {
   static private String passedOrFailedString(boolean result) {
     return result ? "PASSED!" : "FAILED!";
   }
@@ -96,16 +96,24 @@ public class Testing {
     testingAccount1.withdraw(100);
     System.out.println("\tWithdrawing too much: " + equals(testingAccount1.getBalance(), 50)); // Balance should still
                                                                                                // stay the same
-    testingAccount1.transferTo(100, targetAccountForTransaction);
+    testingAccount1.transferTo(50, targetAccountForTransaction);
     System.out
-        .println("\tTransacting $100.00 to another account: " + equals(targetAccountForTransaction.getBalance(), 100));
-    targetAccountForTransaction.transferTo(100, testingAccount1);
+        .println("\tTransacting $50.00 to another account: " + equals(targetAccountForTransaction.getBalance(), 50));
+    targetAccountForTransaction.transferTo(50, testingAccount1);
     System.out.println(
-        "\tTransacting $100.00 back to current account: " + equals(targetAccountForTransaction.getBalance(), 0));
+        "\tTransacting $50.00 back to current account: " + equals(targetAccountForTransaction.getBalance(), 0));
     testingAccount1.transferTo(200, targetAccountForTransaction);
     System.out.println(
         "\tTransacting invalid amount to other account: " + equals(targetAccountForTransaction.getBalance(), 0));
     System.out.println("Current account log:\n" + testingAccount1.getLog());
     System.out.println("Target account log:\n" + targetAccountForTransaction.getLog());
+
+    System.out.println("\nTESTING PASSWORD GENERATOR USING LOOP:");
+    for (int i = 0; i < 100; ++i)
+      System.out.println("   " + testingAccount1.genPswd(6));
+
+    System.out.println("\nTESTING ACCOUNT NUMBER GENERATOR USING LOOP:");
+    for (int i = 0; i < 100; ++i)
+      System.out.println("   " + testingAccount1.genAcctNum(6));
   }
 }
