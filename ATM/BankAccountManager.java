@@ -31,6 +31,7 @@ public class BankAccountManager {
       while (!isAcctNumUnique(account.getAcctNum()))
         account.resetAcctNum();
       acctArray[index] = account;
+      ++numAccts;
       return true;
     }
     return false;
@@ -38,7 +39,7 @@ public class BankAccountManager {
 
   boolean rmAcct(int accountNumber) {
     for (int i = 0; i < acctArray.length; ++i) {
-      if (acctArray[i].getAcctNum() == accountNumber) {
+      if (acctArray[i] != null && acctArray[i].getAcctNum() == accountNumber) {
         acctArray[i] = null;
         --numAccts;
         return true;
@@ -49,19 +50,21 @@ public class BankAccountManager {
 
   BankAccount getAccount(int accountNumber) {
     for (int i = 0; i < acctArray.length; ++i)
-      if (acctArray[i].getAcctNum() == accountNumber)
+      if (acctArray[i] != null && acctArray[i].getAcctNum() == accountNumber)
         return acctArray[i];
     return null;
   }
 
   void depositIntoAll(double amount) {
     for (int i = 0; i < acctArray.length; ++i)
-      acctArray[i].deposit(amount);
+      if (acctArray[i] != null)
+        acctArray[i].deposit(amount);
   }
 
   void withdrawFromAll(double amount) {
     for (int i = 0; i < acctArray.length; ++i)
-      acctArray[i].withdraw(amount);
+      if (acctArray[i] != null)
+        acctArray[i].withdraw(amount);
   }
 
   void clearAccts() {
