@@ -14,7 +14,7 @@ public class BankAccount {
   private double balance;
   private String fName;
   private String lName;
-  String pswd;
+  private String pswd;
   private String log;
 
   /***************************** Constructors *****************************/
@@ -136,13 +136,13 @@ public class BankAccount {
   /*****************************************************************/
 
   /***************************** Generators *****************************/
-  int genAcctNum(int length) {
+  private int genAcctNum(int length) {
     int min = (int) Math.pow(10, length - 1);
     int max = (int) Math.pow(10, length);
     return (int) (min + (Math.random() * (max - min)));
   }
 
-  String genPswd(int length) {
+  private String genPswd(int length) {
     String[] strArray = { "a", "b", "c", "d", "e", "f", "g", "h", "i",
         "j", "k", "l", "m", "n", "o", "p", "q", "r",
         "s", "t", "u", "v", "w", "x", "y", "z", "A",
@@ -168,7 +168,7 @@ public class BankAccount {
     return "";
   }
 
-  String genTimestamp() {
+  private String genTimestamp() {
     String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
     return timeStamp;
   }
