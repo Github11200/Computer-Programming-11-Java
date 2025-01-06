@@ -1,5 +1,3 @@
-package ATM;
-
 public class BankAccountTesting {
   static private String passedOrFailedString(boolean result) {
     return result ? "PASSED!" : "FAILED!";

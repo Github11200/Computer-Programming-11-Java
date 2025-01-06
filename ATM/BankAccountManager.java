@@ -1,5 +1,3 @@
-package ATM;
-
 public class BankAccountManager {
   private int numAccts;
   BankAccount[] acctArray;

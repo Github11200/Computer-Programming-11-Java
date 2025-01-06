@@ -1,5 +1,3 @@
-package ATM;
-
 import java.util.*;
 import java.text.*;
 
@@ -8,14 +6,14 @@ import java.text.*;
 */
 
 public class BankAccount {
-  static private int MAX_PASSWORD_LENGTH = 5;
+  static int MAX_PASSWORD_LENGTH = 5;
 
-  private int acctNum;
-  private double balance;
-  private String fName;
-  private String lName;
-  private String pswd;
-  private String log;
+  int acctNum;
+  double balance;
+  String fName;
+  String lName;
+  String pswd;
+  String log;
 
   /***************************** Constructors *****************************/
   BankAccount() {
@@ -136,13 +134,13 @@ public class BankAccount {
   /*****************************************************************/
 
   /***************************** Generators *****************************/
-  private int genAcctNum(int length) {
+  int genAcctNum(int length) {
     int min = (int) Math.pow(10, length - 1);
     int max = (int) Math.pow(10, length);
     return (int) (min + (Math.random() * (max - min)));
   }
 
-  private String genPswd(int length) {
+  String genPswd(int length) {
     String[] strArray = { "a", "b", "c", "d", "e", "f", "g", "h", "i",
         "j", "k", "l", "m", "n", "o", "p", "q", "r",
         "s", "t", "u", "v", "w", "x", "y", "z", "A",
@@ -168,7 +166,7 @@ public class BankAccount {
     return "";
   }
 
-  private String genTimestamp() {
+  String genTimestamp() {
     String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
     return timeStamp;
   }
