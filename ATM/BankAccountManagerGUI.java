@@ -1,6 +1,177 @@
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-public class BankAccountManagerGUI {
+public class BankAccountManagerGUI extends JFrame {
     private JButton LOGINButton;
-    private JPanel panel1;
+    private JPanel panel;
+    private JPanel loginPanel;
+    private JPanel mainPanel;
+    private JButton loginButton;
+    private JTextField textField1;
+    private JPasswordField passwordField1;
+    private JButton rootDepositButton;
+    private JButton rootWithdrawButton;
+    private JButton rootTransferToButton;
+    private JButton rootAccountInfoButton;
+    private JButton rootViewTransactionsButton;
+    private JButton rootChangePasswordButton;
+    private JButton logoutButton;
+    private JPanel rootPanel;
+    private JButton rootLoginButton;
+    private JButton registerButton;
+    private JPanel depositPanel;
+    private JSpinner depositAmount;
+    private JButton depositButton;
+    private JPanel withdrawPanel;
+    private JPanel transferPanel;
+    private JPanel accountInfoPanel;
+    private JPanel transactionsPanel;
+    private JPanel changePasswordPanel;
+    private JSpinner withdrawAmount;
+    private JButton withdrawButton;
+    private JLabel accountNumber;
+    private JLabel accountBalance;
+    private JLabel firstName;
+    private JLabel password;
+    private JLabel lastName;
+    private JLabel transactions;
+    private JPasswordField passwordField2;
+    private JPasswordField passwordField3;
+    private JLabel currentPasswordLabel;
+    private JLabel newPasswordLabel;
+    private JLabel confirmNewPasswordLabel;
+    private JLabel currentPassword;
+    private JLabel depositAmountLabel;
+    private JLabel withdrawAmountLabel;
+    private JSpinner transferAmountSpinner;
+    private JTextField transferAcountNumberTextField;
+    private JLabel transferAmountLabel;
+    private JLabel transferAccountNumberLabel;
+    private JButton transferButton;
+    private JButton depositExitButton;
+    private JButton withdrawExitButton;
+    private JButton transferExitButton;
+    private JButton accountInfoExitButton;
+    private JButton transactionsExitButton;
+    private JButton changePasswordButton;
+    private JButton changePasswordExitButton;
+    final private CardLayout cardLayout = new CardLayout();
+
+    final private String ROOT_PANEL_ID = "RootPanel";
+    final private String LOGIN_PANEL_ID = "LoginPanel";
+    final private String MAIN_PANEL_ID = "MainPanel";
+    final private String DEPOSIT_PANEL_ID = "DepositPanel";
+    final private String WITHDRAW_PANEL_ID = "WithdrawPanel";
+    final private String TRANSFER_PANEL_ID = "TransferPanel";
+    final private String ACCOUNT_INFO_PANEL_ID = "AccountInfoPanel";
+    final private String TRANSACTION_PANEL_ID = "TransactionPanel";
+    final private String CHANGE_PASSWORD_PANEL_ID = "ChangePasswordPanel";
+
+    public BankAccountManagerGUI() {
+        try {
+            UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+        } catch (Exception e) {
+            System.out.println("Java sucks :( :( :( :( :( :(");
+        }
+
+        // Initialize CardLayout
+        panel = new JPanel(cardLayout);
+
+        // Add panels to the CardLayout
+        panel.add(rootPanel, ROOT_PANEL_ID);
+        panel.add(loginPanel, LOGIN_PANEL_ID);
+        panel.add(mainPanel, MAIN_PANEL_ID);
+        panel.add(depositPanel, DEPOSIT_PANEL_ID);
+        panel.add(withdrawPanel, WITHDRAW_PANEL_ID);
+        panel.add(transferPanel, TRANSFER_PANEL_ID);
+        panel.add(accountInfoPanel, ACCOUNT_INFO_PANEL_ID);
+        panel.add(transactionsPanel, TRANSACTION_PANEL_ID);
+        panel.add(changePasswordPanel, CHANGE_PASSWORD_PANEL_ID);
+
+        // Set up JFrame
+        setContentPane(panel); // Use the parent panel with CardLayout
+
+        /*=================================================
+        COMMENT BACK IN AFTER TESTING
+
+        cardLayout.show(panel, ROOT_PANEL_ID);
+        =================================================*/
+
+        cardLayout.show(panel, ROOT_PANEL_ID);
+
+        setTitle("Bank Account Manager");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(500, 500);
+        setLocationRelativeTo(null);
+        setVisible(true);
+
+        rootLoginButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(panel, LOGIN_PANEL_ID);
+            }
+        });
+
+        loginButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(panel, MAIN_PANEL_ID);
+            }
+        });
+
+        rootDepositButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(panel, DEPOSIT_PANEL_ID);
+            }
+        });
+
+        rootWithdrawButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(panel, WITHDRAW_PANEL_ID);
+            }
+        });
+
+        rootTransferToButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(panel, TRANSFER_PANEL_ID);
+            }
+        });
+
+        rootAccountInfoButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(panel, ACCOUNT_INFO_PANEL_ID);
+            }
+        });
+
+        rootViewTransactionsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(panel, TRANSACTION_PANEL_ID);
+            }
+        });
+
+        rootChangePasswordButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(panel, CHANGE_PASSWORD_PANEL_ID);
+            }
+        });
+
+        logoutButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(panel, ROOT_PANEL_ID);
+            }
+        });
+    }
+
+    public static void main(String[] args) {
+        new BankAccountManagerGUI();
+    }
 }
