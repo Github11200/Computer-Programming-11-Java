@@ -57,10 +57,17 @@ public class BankAccountManagerGUI extends JFrame {
     private JButton transactionsExitButton;
     private JButton changePasswordButton;
     private JButton changePasswordExitButton;
+    private JPanel registerPanel;
+    private JTextField textField2;
+    private JTextField textField3;
+    private JCheckBox generatePasswordCheckBox;
+    private JButton createAccountButton;
+    private JButton registerExitButton;
     final private CardLayout cardLayout = new CardLayout();
 
     final private String ROOT_PANEL_ID = "RootPanel";
     final private String LOGIN_PANEL_ID = "LoginPanel";
+    final private String REGISTER_PANEL_ID = "RegisterPanel";
     final private String MAIN_PANEL_ID = "MainPanel";
     final private String DEPOSIT_PANEL_ID = "DepositPanel";
     final private String WITHDRAW_PANEL_ID = "WithdrawPanel";
@@ -68,6 +75,9 @@ public class BankAccountManagerGUI extends JFrame {
     final private String ACCOUNT_INFO_PANEL_ID = "AccountInfoPanel";
     final private String TRANSACTION_PANEL_ID = "TransactionPanel";
     final private String CHANGE_PASSWORD_PANEL_ID = "ChangePasswordPanel";
+
+    static BankAccountManager bankAccountManager = new BankAccountManager();
+    BankAccount currentBankAccount = null;
 
     public BankAccountManagerGUI() {
         try {
@@ -81,6 +91,7 @@ public class BankAccountManagerGUI extends JFrame {
 
         // Add panels to the CardLayout
         panel.add(rootPanel, ROOT_PANEL_ID);
+        panel.add(registerPanel, REGISTER_PANEL_ID);
         panel.add(loginPanel, LOGIN_PANEL_ID);
         panel.add(mainPanel, MAIN_PANEL_ID);
         panel.add(depositPanel, DEPOSIT_PANEL_ID);
@@ -120,6 +131,8 @@ public class BankAccountManagerGUI extends JFrame {
                 cardLayout.show(panel, MAIN_PANEL_ID);
             }
         });
+
+
 
         rootDepositButton.addActionListener(new ActionListener() {
             @Override
@@ -169,9 +182,74 @@ public class BankAccountManagerGUI extends JFrame {
                 cardLayout.show(panel, ROOT_PANEL_ID);
             }
         });
+
+        depositExitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(panel, MAIN_PANEL_ID);
+            }
+        });
+
+        withdrawExitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(panel, MAIN_PANEL_ID);
+            }
+        });
+
+        transferExitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(panel, MAIN_PANEL_ID);
+            }
+        });
+
+        accountInfoExitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(panel, MAIN_PANEL_ID);
+            }
+        });
+
+        transactionsExitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(panel, MAIN_PANEL_ID);
+            }
+        });
+
+        changePasswordExitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(panel, MAIN_PANEL_ID);
+            }
+        });
+
+        registerExitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(panel, ROOT_PANEL_ID);
+            }
+        });
+
+        registerButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(panel, REGISTER_PANEL_ID);
+            }
+        });
     }
 
     public static void main(String[] args) {
+        BankAccount bankAccount1 = new BankAccount("Darth", "Vader");
+        BankAccount bankAccount2 = new BankAccount("Obi-wan", "Kenobi");
+        BankAccount bankAccount3 = new BankAccount("Luke", "Skywalker");
+
+        bankAccountManager.addAcct(bankAccount1);
+        bankAccountManager.addAcct(bankAccount2);
+        bankAccountManager.addAcct(bankAccount3);
+        bankAccountManager.display();
+
         new BankAccountManagerGUI();
     }
 }
