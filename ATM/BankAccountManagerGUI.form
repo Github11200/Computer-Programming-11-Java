@@ -434,7 +434,10 @@
             <constraints>
               <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
             </constraints>
-            <properties/>
+            <properties>
+              <horizontalScrollBarPolicy value="31"/>
+              <verticalScrollBarPolicy value="22"/>
+            </properties>
             <border type="none"/>
             <children>
               <component id="57af1" class="javax.swing.JLabel" binding="transactionsText">
@@ -496,7 +499,7 @@
               <text value="Confirm New Password:"/>
             </properties>
           </component>
-          <component id="36c6e" class="javax.swing.JPasswordField" binding="passwordField2" default-binding="true">
+          <component id="36c6e" class="javax.swing.JPasswordField" binding="newPasswordField">
             <constraints>
               <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="150" height="35"/>
@@ -506,7 +509,7 @@
               <font size="14"/>
             </properties>
           </component>
-          <component id="1b111" class="javax.swing.JPasswordField" binding="passwordField3" default-binding="true">
+          <component id="1b111" class="javax.swing.JPasswordField" binding="confirmNewPasswordField">
             <constraints>
               <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="150" height="35"/>
@@ -514,14 +517,6 @@
             </constraints>
             <properties>
               <font size="14"/>
-            </properties>
-          </component>
-          <component id="5a600" class="javax.swing.JLabel" binding="currentPassword">
-            <constraints>
-              <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <text value="ksdfl&amp;233(#@kss"/>
             </properties>
           </component>
           <vspacer id="c805e">
@@ -550,9 +545,17 @@
               <text value="Exit to Main Menu"/>
             </properties>
           </component>
+          <component id="eb40a" class="javax.swing.JPasswordField" binding="currentPasswordField">
+            <constraints>
+              <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="150" height="35"/>
+              </grid>
+            </constraints>
+            <properties/>
+          </component>
         </children>
       </grid>
-      <grid id="fbdf" binding="registerPanel" layout-manager="GridLayoutManager" row-count="7" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+      <grid id="fbdf" binding="registerPanel" layout-manager="GridLayoutManager" row-count="8" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="20" bottom="0" right="20"/>
         <constraints>
           <card name="Card10"/>
@@ -568,7 +571,7 @@
               <text value="First Name:"/>
             </properties>
           </component>
-          <component id="fccd9" class="javax.swing.JTextField" binding="textField2" default-binding="true">
+          <component id="fccd9" class="javax.swing.JTextField" binding="firstNameTextField">
             <constraints>
               <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="150" height="35"/>
@@ -586,7 +589,7 @@
               <text value="Last Name:"/>
             </properties>
           </component>
-          <component id="cc218" class="javax.swing.JTextField" binding="textField3" default-binding="true">
+          <component id="cc218" class="javax.swing.JTextField" binding="lastNameTextField">
             <constraints>
               <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="150" height="35"/>
@@ -598,15 +601,16 @@
           </component>
           <component id="a4800" class="javax.swing.JCheckBox" binding="generatePasswordCheckBox" default-binding="true">
             <constraints>
-              <grid row="3" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="4" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
+              <selected value="false"/>
               <text value="Generate Password"/>
             </properties>
           </component>
           <component id="20cc3" class="javax.swing.JButton" binding="createAccountButton" default-binding="true">
             <constraints>
-              <grid row="4" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <grid row="5" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <text value="Create Account"/>
@@ -619,15 +623,31 @@
           </vspacer>
           <vspacer id="6bae6">
             <constraints>
-              <grid row="6" column="0" row-span="1" col-span="2" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+              <grid row="7" column="0" row-span="1" col-span="2" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
             </constraints>
           </vspacer>
           <component id="123e" class="javax.swing.JButton" binding="registerExitButton">
             <constraints>
-              <grid row="5" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <grid row="6" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <text value="Exit to Main Menu"/>
+            </properties>
+          </component>
+          <component id="a40d7" class="javax.swing.JPasswordField" binding="passwordField">
+            <constraints>
+              <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="150" height="35"/>
+              </grid>
+            </constraints>
+            <properties/>
+          </component>
+          <component id="24faa" class="javax.swing.JLabel" binding="passwordFieldLabel">
+            <constraints>
+              <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="Password"/>
             </properties>
           </component>
         </children>
