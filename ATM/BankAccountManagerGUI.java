@@ -2,11 +2,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Arrays;
-
-/*******************************************
- * WORK ON THE CHANGE PASSWORD 🙏🙏🙏🙏
- ******************************************/
 
 public class BankAccountManagerGUI extends JFrame {
     static BankAccountManager bankAccountManager = new BankAccountManager();
@@ -84,6 +79,10 @@ public class BankAccountManagerGUI extends JFrame {
     private JPasswordField currentPasswordField;
     private JPasswordField passwordField;
     private JLabel passwordFieldLabel;
+    private JButton exitLoginPanelButton;
+    private JLabel depositMessageLabel;
+    private JLabel withdrawMessageLabel;
+    private JLabel transferMessageLabel;
 
     public BankAccountManagerGUI() {
         try {
@@ -109,12 +108,6 @@ public class BankAccountManagerGUI extends JFrame {
 
         // Set up JFrame
         setContentPane(panel); // Use the parent panel with CardLayout
-
-        /*=================================================
-        COMMENT BACK IN AFTER TESTING
-
-        cardLayout.show(panel, ROOT_PANEL_ID);
-        =================================================*/
 
         cardLayout.show(panel, ROOT_PANEL_ID);
 
@@ -216,6 +209,7 @@ public class BankAccountManagerGUI extends JFrame {
         depositExitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                depositMessageLabel.setText("");
                 cardLayout.show(panel, MAIN_PANEL_ID);
             }
         });
@@ -223,6 +217,7 @@ public class BankAccountManagerGUI extends JFrame {
         withdrawExitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                withdrawMessageLabel.setText("");
                 cardLayout.show(panel, MAIN_PANEL_ID);
             }
         });
@@ -230,6 +225,7 @@ public class BankAccountManagerGUI extends JFrame {
         transferExitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                transferMessageLabel.setText("");
                 cardLayout.show(panel, MAIN_PANEL_ID);
             }
         });
@@ -290,7 +286,7 @@ public class BankAccountManagerGUI extends JFrame {
                     message = "Deposit failed!";
                 }
 
-                dialogWindow(title, message);
+                depositMessageLabel.setText(message);
             }
         });
 
@@ -315,7 +311,7 @@ public class BankAccountManagerGUI extends JFrame {
                     message = "Withdraw failed! Not enough account balance.";
                 }
 
-                dialogWindow(title, message);
+                withdrawMessageLabel.setText(message);
             }
         });
 
@@ -378,6 +374,9 @@ public class BankAccountManagerGUI extends JFrame {
                 } else if (transferAmount > currentBankAccount.getBalance()) {
                     title = "Error!";
                     message = "Transfer amount exceeds current balance!";
+                } else if (Integer.parseInt(transferAccountNumberString) == currentBankAccount.getAcctNum()) {
+                    title = "Error!";
+                    message = "You cannot transfer to your own account!";
                 } else {
                     int transferAccountNumber = Integer.parseInt(transferAccountNumberString);
                     BankAccount accountToTransfer = bankAccountManager.getAccount(transferAccountNumber);
@@ -393,16 +392,16 @@ public class BankAccountManagerGUI extends JFrame {
                     }
                 }
 
-                dialogWindow(title, message);
+                transferMessageLabel.setText(message);
             }
         });
 
         createAccountButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String firstName = firstNameTextField.getText();
-                String lastName = lastNameTextField.getText();
-                String password = String.valueOf(passwordField.getPassword());
+                String firstName = firstNameTextField.getText().trim();
+                String lastName = lastNameTextField.getText().trim();
+                String password = String.valueOf(passwordField.getPassword()).trim();
                 boolean generatePassword = generatePasswordCheckBox.isSelected();
 
                 String title = "";
@@ -417,6 +416,9 @@ public class BankAccountManagerGUI extends JFrame {
                 } else if (!generatePassword && password.isEmpty()) {
                     title = "Error!";
                     message = "Password cannot be empty!";
+                } else if (password.length() < 8) {
+                    title = "Error!";
+                    message = "Password must be at least 8 characters";
                 } else {
                     BankAccount newBankAccount;
                     if (generatePassword) {
@@ -428,7 +430,7 @@ public class BankAccountManagerGUI extends JFrame {
 
                     if (bankAccountManager.addAcct(newBankAccount)) {
                         title = "Success!";
-                        message = "Account number: " + newBankAccount.getAcctNum();
+                        message = "Account number: " + newBankAccount.getAcctNum() + "<br>" + "Password: " + newBankAccount.pswd;
                     } else {
                         title = "Error!";
                         message = "Can't add more accounts! :(";
@@ -441,6 +443,8 @@ public class BankAccountManagerGUI extends JFrame {
                     cardLayout.show(panel, ROOT_PANEL_ID);
                 }
                 dialogWindow(title, message);
+                generatePasswordCheckBox.setSelected(false);
+                passwordField.setVisible(true);
             }
         });
 
@@ -449,6 +453,13 @@ public class BankAccountManagerGUI extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 passwordField.setVisible(!generatePasswordCheckBox.isSelected());
                 passwordFieldLabel.setVisible(!generatePasswordCheckBox.isSelected());
+            }
+        });
+
+        exitLoginPanelButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(panel, ROOT_PANEL_ID);
             }
         });
     }
@@ -464,6 +475,12 @@ public class BankAccountManagerGUI extends JFrame {
         bankAccountManager.display();
 
         bankAccount1.display();
+        System.out.println("================================================");
+        bankAccount2.display();
+        System.out.println("================================================");
+        bankAccount3.display();
+        System.out.println("================================================");
+
         new BankAccountManagerGUI();
     }
 
@@ -478,7 +495,7 @@ public class BankAccountManagerGUI extends JFrame {
 
     private void dialogWindow(String title, String message) {
         JDialog dialog = new JDialog();
-        JLabel successLabel = new JLabel(message, JLabel.CENTER);
+        JLabel successLabel = new JLabel("<html><p style=\"text-align:center\">" + message + "</p></html>", JLabel.CENTER);
 
         dialog.setTitle(title);
         dialog.setModal(true);
