@@ -8,6 +8,7 @@ import org.json.JSONObject;
 
 public class BankAccountManagerGUI extends JFrame {
     static BankAccountManager bankAccountManager = new BankAccountManager();
+    static HttpURLConnectionATM httpURLConnectionATM = new HttpURLConnectionATM();
     final private CardLayout cardLayout = new CardLayout();
     final private String ROOT_PANEL_ID = "RootPanel";
     final private String LOGIN_PANEL_ID = "LoginPanel";
@@ -132,22 +133,28 @@ public class BankAccountManagerGUI extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 try {
                     int accountNumber = Integer.parseInt(usernameTextField.getText());
-                    currentBankAccount = bankAccountManager.getAccount(accountNumber);
-                    if (currentBankAccount == null)
-                        throw new IllegalArgumentException("Invalid account number");
-                    else if (!currentBankAccount.checkPswd(String.valueOf(passwordTextField.getPassword()))) {
-                        currentBankAccount = null;
-                        throw new IllegalArgumentException("Invalid password");
-                    }
+                    String password = passwordField.getPassword().toString();
+                    JSONObject params = new JSONObject();
+                    params.put("accountNumber", accountNumber);
+                    params.put("password", password);
+
+                    int res = httpURLConnectionATM.sendPost("login.php/", params);
+
                     usernameTextField.setText("");
                     passwordTextField.setText("");
                     cardLayout.show(panel, MAIN_PANEL_ID);
                 } catch (Exception e1) {
                     String message = e1.getMessage();
+                    
+                    if (message.contains("402")) message = "Invalid account number!";
+                    else if (message.contains("401")) message = "Invalid password!";
+                    else message = "Server error!";
+
                     String title = "Error";
 
                     if (e1 instanceof NumberFormatException)
                         message = "Please enter your account number, not any other characters";
+
                     dialogWindow(title, message);
                 }
             }
