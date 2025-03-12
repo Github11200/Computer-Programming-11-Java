@@ -14,7 +14,7 @@ class HttpURLConnectionATM {
     final String rootUrl = "http://localhost/php/";
 
     // HTTP POST request
-    int sendPost(String url, JSONObject params) throws Exception {
+    String sendPost(String url, JSONObject params) throws Exception {
         URL obj = new URL(rootUrl + url);
         java.net.HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
@@ -39,6 +39,6 @@ class HttpURLConnectionATM {
         }
         in.close();
 
-        return responseCode;
+        return response.toString();
     }
 }

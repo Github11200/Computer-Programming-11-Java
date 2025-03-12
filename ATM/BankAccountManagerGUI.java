@@ -133,19 +133,22 @@ public class BankAccountManagerGUI extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 try {
                     int accountNumber = Integer.parseInt(usernameTextField.getText());
-                    String password = passwordField.getPassword().toString();
+                    String password = new String(passwordTextField.getPassword());
                     JSONObject params = new JSONObject();
-                    params.put("accountNumber", accountNumber);
+                    params.put("acct_num", accountNumber);
                     params.put("password", password);
 
-                    int res = httpURLConnectionATM.sendPost("login.php/", params);
+                    String response = httpURLConnectionATM.sendPost("login.php/", params);
+                    JSONObject responseJSON = new JSONObject(response);
 
+                    currentBankAccount = new BankAccount(Integer.parseInt(responseJSON.get("acct_num").toString()), Double.parseDouble(responseJSON.get("balance").toString()), responseJSON.get("first_name").toString(), responseJSON.get("last_name").toString(), responseJSON.get("password").toString(), responseJSON.get("log").toString());
                     usernameTextField.setText("");
                     passwordTextField.setText("");
                     cardLayout.show(panel, MAIN_PANEL_ID);
                 } catch (Exception e1) {
                     String message = e1.getMessage();
-                    
+
+                    System.out.println(message);
                     if (message.contains("402")) message = "Invalid account number!";
                     else if (message.contains("401")) message = "Invalid password!";
                     else message = "Server error!";
@@ -279,23 +282,19 @@ public class BankAccountManagerGUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int amount = (Integer) depositAmount.getValue();
-                boolean deposited = currentBankAccount.deposit(amount);
-
                 String message = "";
-                String title = "";
 
-                if (amount < 0) {
-                    title = "Error!";
-                    message = "Please enter a positive number";
-                } else if (deposited) {
-                    title = "Success!";
+                try {
+                    JSONObject params = new JSONObject();
+                    params.put("acct_num", currentBankAccount.acctNum);
+                    params.put("amount", amount);
+
+                    httpURLConnectionATM.sendPost("deposit.php/", params);
+
                     message = "Deposited successfully!";
-                    depositAmount.setValue(0);
-                } else {
-                    title = "Error!";
-                    message = "Deposit failed!";
+                } catch (Exception e1) {
+                    message = "Server error!";
                 }
-
                 depositMessageLabel.setText(message);
             }
         });
@@ -478,6 +477,7 @@ public class BankAccountManagerGUI extends JFrame {
         BankAccount bankAccount1 = new BankAccount("Darth", "Vader");
         BankAccount bankAccount2 = new BankAccount("Obi-wan", "Kenobi");
         BankAccount bankAccount3 = new BankAccount("Luke", "Skywalker");
+        BankAccount bankAccount4 = new BankAccount(12345, 100, "Chuck", "Noris", "funtimes", "");
 
         bankAccountManager.addAcct(bankAccount1);
         bankAccountManager.addAcct(bankAccount2);
