@@ -292,6 +292,8 @@ public class BankAccountManagerGUI extends JFrame {
                     httpURLConnectionATM.sendPost("deposit.php/", params);
 
                     message = "Deposited successfully!";
+                    currentBankAccount.deposit(amount);
+                    sendUpdatedLog();
                 } catch (Exception e1) {
                     message = "Server error!";
                 }
@@ -306,20 +308,25 @@ public class BankAccountManagerGUI extends JFrame {
                 boolean withdrawn = currentBankAccount.withdraw(amount);
 
                 String message = "";
-                String title = "";
 
-                if (amount < 0) {
-                    title = "Error!";
-                    message = "Please enter an amount greater than zero";
-                } else if (withdrawn) {
-                    title = "Success!";
-                    message = "Withdrawn successfully!";
-                    withdrawAmount.setValue(0);
+                if (withdrawn) {
+                    try {
+                        JSONObject params = new JSONObject();
+                        params.put("acct_num", currentBankAccount.acctNum);
+                        params.put("amount", amount);
+
+                        httpURLConnectionATM.sendPost("withdraw.php/", params);
+
+                        message = "Withdrawn successfully!";
+                        sendUpdatedLog();
+                    } catch (Exception e1) {
+                        message = "Server error!";
+                    }
+                } else if (amount > currentBankAccount.getBalance()) {
+                    message = "Insufficient balance!";
                 } else {
-                    title = "Error!";
-                    message = "Withdraw failed! Not enough account balance.";
+                    message = "Error!";
                 }
-
                 withdrawMessageLabel.setText(message);
             }
         });
@@ -500,6 +507,18 @@ public class BankAccountManagerGUI extends JFrame {
             return true;
         } catch (NumberFormatException e) {
             return false;
+        }
+    }
+
+    private void sendUpdatedLog() {
+        try {
+            JSONObject params = new JSONObject();
+            params.put("acct_num", currentBankAccount.acctNum);
+            params.put("log", currentBankAccount.getLog());
+
+            httpURLConnectionATM.sendPost("updateLogs.php/", params);
+        } catch (Exception e) {
+            throw new Error("Failed to update log: " + e);
         }
     }
 
