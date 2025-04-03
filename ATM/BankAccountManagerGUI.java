@@ -9,6 +9,7 @@ import org.json.JSONObject;
 public class BankAccountManagerGUI extends JFrame {
     static BankAccountManager bankAccountManager = new BankAccountManager();
     static HttpURLConnectionATM httpURLConnectionATM = new HttpURLConnectionATM();
+    static ServerBankAccountManager serverBankAccountManager = new ServerBankAccountManager();
     final private CardLayout cardLayout = new CardLayout();
     final private String ROOT_PANEL_ID = "RootPanel";
     final private String LOGIN_PANEL_ID = "LoginPanel";
@@ -134,14 +135,12 @@ public class BankAccountManagerGUI extends JFrame {
                 try {
                     int accountNumber = Integer.parseInt(usernameTextField.getText());
                     String password = new String(passwordTextField.getPassword());
-                    JSONObject params = new JSONObject();
-                    params.put("acct_num", accountNumber);
-                    params.put("password", password);
 
-                    String response = httpURLConnectionATM.sendPost("login.php/", params);
-                    JSONObject responseJSON = new JSONObject(response);
+                    if (!serverBankAccountManager.accountExists(accountNumber)) throw new Exception("402");
+                    else if (!serverBankAccountManager.checkPassword(accountNumber, password))
+                        throw new Exception("401");
 
-                    currentBankAccount = new BankAccount(Integer.parseInt(responseJSON.get("acct_num").toString()), Double.parseDouble(responseJSON.get("balance").toString()), responseJSON.get("first_name").toString(), responseJSON.get("last_name").toString(), responseJSON.get("password").toString(), responseJSON.get("log").toString());
+                    currentBankAccount = serverBankAccountManager.getAccount(accountNumber);
                     usernameTextField.setText("");
                     passwordTextField.setText("");
                     cardLayout.show(panel, MAIN_PANEL_ID);
@@ -395,16 +394,36 @@ public class BankAccountManagerGUI extends JFrame {
                     message = "You cannot transfer to your own account!";
                 } else {
                     int transferAccountNumber = Integer.parseInt(transferAccountNumberString);
-                    BankAccount accountToTransfer = bankAccountManager.getAccount(transferAccountNumber);
-                    boolean isTransferred = currentBankAccount.transferTo(transferAmount, accountToTransfer);
-                    if (isTransferred) {
-                        title = "Success!";
-                        message = "Transfered successfully! :)";
-                        transferAmountSpinner.setValue(0);
-                        transferAcountNumberTextField.setText("");
-                    } else {
-                        title = "Error!";
-                        message = "Transfer failed! :(";
+
+                    try {
+                        JSONObject params = new JSONObject();
+                        params.put("acct_num", currentBankAccount.acctNum);
+                        params.put("target_acct_num", transferAccountNumber);
+                        params.put("amount", transferAmount);
+
+                        String response = httpURLConnectionATM.sendPost("transfer.php/", params);
+                        JSONObject responseJSON = new JSONObject(response);
+
+                        if (responseJSON.has("error")) {
+                            if (responseJSON.get("error").toString().equals("acct_num")) {
+                                message = "Incorrect account number!";
+                            } else if (responseJSON.get("error").toString().equals("target_acct_num")) {
+                                message = "Incorrect target account number!";
+                            } else {
+                                message = responseJSON.get("error").toString();
+                            }
+                        } else {
+                            message = "Transferred successfully!";
+                            try {
+                                JSONObject accountLogParams = new JSONObject();
+                                accountLogParams.put("acct_num", currentBankAccount.acctNum);
+                                accountLogParams.put("log", currentBankAccount.log + "\t" + currentBankAccount.genTimestamp() + "  Transfer [$" + transferAmount + " to account " + transferAccountNumberString + "]\n");
+                            } catch (Exception ex) {
+
+                            }
+                        }
+                    } catch (Exception e1) {
+                        message = "Server error!";
                     }
                 }
 
