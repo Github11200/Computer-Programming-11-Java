@@ -7,6 +7,7 @@ public class ServerBankAccountManager {
     HttpURLConnectionATM connection;
 
     ServerBankAccountManager() {
+        connection = new HttpURLConnectionATM();
     }
 
     private JSONObject createJSONObject(HashMap<String, Object> params) throws JSONException {
@@ -26,8 +27,8 @@ public class ServerBankAccountManager {
 
     boolean accountExists(int acctNum) {
         try {
-            JSONObject response = sendRequest("/account/exists", createJSONObject(new HashMap<>() {{
-                put("acctNum", acctNum);
+            JSONObject response = sendRequest("account/accountExists.php", createJSONObject(new HashMap<>() {{
+                put("acct_num", acctNum);
             }}));
 
             return !response.has("error");
@@ -39,8 +40,8 @@ public class ServerBankAccountManager {
 
     boolean checkPassword(int acctNum, String password) {
         try {
-            JSONObject response = sendRequest("/account/checkPassword", createJSONObject(new HashMap<>() {{
-                put("acctNum", acctNum);
+            JSONObject response = sendRequest("account/checkPassword.php", createJSONObject(new HashMap<>() {{
+                put("acct_num", acctNum);
                 put("password", password);
             }}));
 
@@ -51,10 +52,11 @@ public class ServerBankAccountManager {
         }
     }
 
-    BankAccount getAccount(int acctNum) throws Exception {
+    BankAccount getAccount(int acctNum, String password) throws Exception {
         try {
-            JSONObject response = sendRequest("/account/getAccount", createJSONObject(new HashMap<>() {{
-                put("acctNum", acctNum);
+            JSONObject response = sendRequest("account/getAccount.php", createJSONObject(new HashMap<>() {{
+                put("acct_num", acctNum);
+                put("password", password);
             }}));
 
             return new BankAccount(Integer.parseInt(response.get("acct_num").toString()),
@@ -65,6 +67,58 @@ public class ServerBankAccountManager {
                     response.get("log").toString());
         } catch (Exception e) {
             throw new Exception("Error while getting account: " + e.getMessage());
+        }
+    }
+
+    BankAccount deposit(int acctNum, int amount, String password) throws Exception {
+        try {
+            JSONObject response = sendRequest("deposit.php", createJSONObject(new HashMap<>() {{
+                put("acct_num", acctNum);
+                put("password", password);
+                put("amount", amount);
+            }}));
+
+            if (response.has("error")) return null;
+            return getAccount(acctNum, password);
+        } catch (Exception e) {
+            throw new Exception("Error while depositing to account: " + e.getMessage());
+        }
+    }
+
+    BankAccount withdraw(int acctNum, int amount, String password) throws Exception {
+        try {
+            JSONObject response = sendRequest("withdraw.php", createJSONObject(new HashMap<>() {{
+                put("acct_num", acctNum);
+                put("password", password);
+                put("amount", amount);
+            }}));
+
+            if (response.has("error") && response.get("error").equals("amount")) throw new Exception("amount");
+            else if (response.has("error") && response.get("error").equals("withdrawal"))
+                throw new Exception("withdrawal");
+            return getAccount(acctNum, password);
+        } catch (Exception e) {
+            throw new Exception("Error while withdrawing from account: " + e.getMessage());
+        }
+    }
+
+    BankAccount transfer(int acctNum, int targetAcctNum, int amount, String password) throws Exception {
+        try {
+            JSONObject response = sendRequest("transfer.php", createJSONObject(new HashMap<>() {{
+                put("acct_num", acctNum);
+                put("target_acct_num", targetAcctNum);
+                put("amount", amount);
+            }}));
+
+            if (response.has("error")) {
+                String error = response.get("error").toString();
+                if (error.equals("amount")) throw new Exception("amount");
+                else if (error.equals("target_acct_num")) throw new Exception("target_acct_num");
+                else if (error.equals("transfer")) throw new Exception("transfer");
+            }
+            return getAccount(acctNum, password);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 }

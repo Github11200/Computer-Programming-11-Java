@@ -140,7 +140,7 @@ public class BankAccountManagerGUI extends JFrame {
                     else if (!serverBankAccountManager.checkPassword(accountNumber, password))
                         throw new Exception("401");
 
-                    currentBankAccount = serverBankAccountManager.getAccount(accountNumber);
+                    currentBankAccount = serverBankAccountManager.getAccount(accountNumber, password);
                     usernameTextField.setText("");
                     passwordTextField.setText("");
                     cardLayout.show(panel, MAIN_PANEL_ID);
@@ -284,15 +284,11 @@ public class BankAccountManagerGUI extends JFrame {
                 String message = "";
 
                 try {
-                    JSONObject params = new JSONObject();
-                    params.put("acct_num", currentBankAccount.acctNum);
-                    params.put("amount", amount);
+                    BankAccount depositRequest = serverBankAccountManager.deposit(currentBankAccount.acctNum, amount, currentBankAccount.pswd);
+                    if (depositRequest != null)
+                        currentBankAccount = depositRequest;
 
-                    httpURLConnectionATM.sendPost("deposit.php/", params);
-
-                    message = "Deposited successfully!";
-                    currentBankAccount.deposit(amount);
-                    sendUpdatedLog();
+                    message = "Withdrawn successfully!";
                 } catch (Exception e1) {
                     message = "Server error!";
                 }
@@ -304,28 +300,24 @@ public class BankAccountManagerGUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int amount = (Integer) withdrawAmount.getValue();
-                boolean withdrawn = currentBankAccount.withdraw(amount);
 
                 String message = "";
 
-                if (withdrawn) {
-                    try {
-                        JSONObject params = new JSONObject();
-                        params.put("acct_num", currentBankAccount.acctNum);
-                        params.put("amount", amount);
+                try {
+                    BankAccount withdrawRequest = serverBankAccountManager.withdraw(currentBankAccount.acctNum, amount, currentBankAccount.pswd);
+                    if (withdrawRequest != null)
+                        currentBankAccount = withdrawRequest;
 
-                        httpURLConnectionATM.sendPost("withdraw.php/", params);
-
-                        message = "Withdrawn successfully!";
-                        sendUpdatedLog();
-                    } catch (Exception e1) {
+                    message = "Withdrawn successfully!";
+                } catch (Exception e1) {
+                    if (e1.getMessage().equals("amount"))
+                        message = "Insufficient balance!";
+                    else if (e1.getMessage().equals("withdrawal"))
+                        message = "Problem withdrawing";
+                    else
                         message = "Server error!";
-                    }
-                } else if (amount > currentBankAccount.getBalance()) {
-                    message = "Insufficient balance!";
-                } else {
-                    message = "Error!";
                 }
+
                 withdrawMessageLabel.setText(message);
             }
         });
@@ -526,18 +518,6 @@ public class BankAccountManagerGUI extends JFrame {
             return true;
         } catch (NumberFormatException e) {
             return false;
-        }
-    }
-
-    private void sendUpdatedLog() {
-        try {
-            JSONObject params = new JSONObject();
-            params.put("acct_num", currentBankAccount.acctNum);
-            params.put("log", currentBankAccount.getLog());
-
-            httpURLConnectionATM.sendPost("updateLogs.php/", params);
-        } catch (Exception e) {
-            throw new Error("Failed to update log: " + e);
         }
     }
 
