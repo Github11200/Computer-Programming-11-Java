@@ -112,11 +112,39 @@ public class ServerBankAccountManager {
 
             if (response.has("error")) {
                 String error = response.get("error").toString();
-                if (error.equals("amount")) throw new Exception("amount");
-                else if (error.equals("target_acct_num")) throw new Exception("target_acct_num");
-                else if (error.equals("transfer")) throw new Exception("transfer");
+                if (error.equals("transfer")) throw new Exception("transfer");
             }
             return getAccount(acctNum, password);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    BankAccount changePassword(int acctNum, String oldPassword, String newPassword) throws Exception {
+        try {
+            JSONObject response = sendRequest("account/changePassword.php", createJSONObject(new HashMap<>() {{
+                put("acct_num", acctNum);
+                put("password", oldPassword);
+                put("new_password", newPassword);
+            }}));
+
+            if (response.has("error")) throw new Exception("Could not update password!");
+            return getAccount(acctNum, newPassword);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    void createAccount(BankAccount newAccount) throws Exception {
+        try {
+            JSONObject response = sendRequest("account/createAccount.php", createJSONObject(new HashMap<>() {{
+                put("acct_num", newAccount.getAcctNum());
+                put("password", newAccount.pswd);
+                put("first_name", newAccount.getFName());
+                put("last_name", newAccount.getLName());
+            }}));
+
+            if (response.has("error")) throw new Exception("Could not create account!");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

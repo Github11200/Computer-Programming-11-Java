@@ -3,9 +3,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 public class BankAccountManagerGUI extends JFrame {
     static BankAccountManager bankAccountManager = new BankAccountManager();
     static HttpURLConnectionATM httpURLConnectionATM = new HttpURLConnectionATM();
@@ -88,6 +85,8 @@ public class BankAccountManagerGUI extends JFrame {
     private JLabel depositMessageLabel;
     private JLabel withdrawMessageLabel;
     private JLabel transferMessageLabel;
+    private JLabel changePasswordMessageLabel;
+    private JLabel registerMessageLabel;
 
     public BankAccountManagerGUI() {
         try {
@@ -141,6 +140,7 @@ public class BankAccountManagerGUI extends JFrame {
                         throw new Exception("401");
 
                     currentBankAccount = serverBankAccountManager.getAccount(accountNumber, password);
+                    System.out.println("Amount: " + serverBankAccountManager.getAccount(accountNumber, password).getBalance());
                     usernameTextField.setText("");
                     passwordTextField.setText("");
                     cardLayout.show(panel, MAIN_PANEL_ID);
@@ -266,6 +266,7 @@ public class BankAccountManagerGUI extends JFrame {
         registerExitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                registerMessageLabel.setText("");
                 cardLayout.show(panel, ROOT_PANEL_ID);
             }
         });
@@ -329,31 +330,30 @@ public class BankAccountManagerGUI extends JFrame {
                 String newPassword = String.valueOf(newPasswordField.getPassword());
                 String newPasswordConfirmation = String.valueOf(confirmNewPasswordField.getPassword());
 
-                String title = "";
                 String message = "";
 
                 if (currentBankAccount.checkPswd(currentPassword)) {
                     if (newPassword.isEmpty()) {
-                        title = "Error!";
                         message = "Password cannot be empty!";
                     } else if (newPassword.equals(newPasswordConfirmation)) {
-                        currentBankAccount.resetPswd(currentPassword, newPassword);
-                        title = "Success!";
-                        message = "Password changed successfully! :)";
+                        try {
+                            currentBankAccount = serverBankAccountManager.changePassword(currentBankAccount.acctNum, currentPassword, newPassword);
+                            message = "Password changed successfully! :)";
+                        } catch (Exception e1) {
+                            message = "Error changing password!";
+                        }
+
                         currentPasswordField.setText("");
                         newPasswordField.setText("");
                         confirmNewPasswordField.setText("");
-                        System.out.println(currentBankAccount.pswd);
                     } else {
-                        title = "Error!";
                         message = "New password and new password confirmation do not match! :(";
                     }
                 } else {
-                    title = "Error!";
                     message = "Current password does not match! :(";
                 }
 
-                dialogWindow(title, message);
+                changePasswordMessageLabel.setText(message);
             }
         });
 
@@ -372,7 +372,7 @@ public class BankAccountManagerGUI extends JFrame {
                 } else if (!isNumeric(transferAccountNumberString)) {
                     title = "Error!";
                     message = "Account number is not a number!";
-                } else if (bankAccountManager.getAccount(Integer.parseInt(transferAccountNumberString)) == null) {
+                } else if (!serverBankAccountManager.accountExists(Integer.parseInt(transferAccountNumberString))) {
                     title = "Error!";
                     message = "Account not found!";
                 } else if (transferAmount < 0) {
@@ -388,34 +388,10 @@ public class BankAccountManagerGUI extends JFrame {
                     int transferAccountNumber = Integer.parseInt(transferAccountNumberString);
 
                     try {
-                        JSONObject params = new JSONObject();
-                        params.put("acct_num", currentBankAccount.acctNum);
-                        params.put("target_acct_num", transferAccountNumber);
-                        params.put("amount", transferAmount);
-
-                        String response = httpURLConnectionATM.sendPost("transfer.php/", params);
-                        JSONObject responseJSON = new JSONObject(response);
-
-                        if (responseJSON.has("error")) {
-                            if (responseJSON.get("error").toString().equals("acct_num")) {
-                                message = "Incorrect account number!";
-                            } else if (responseJSON.get("error").toString().equals("target_acct_num")) {
-                                message = "Incorrect target account number!";
-                            } else {
-                                message = responseJSON.get("error").toString();
-                            }
-                        } else {
-                            message = "Transferred successfully!";
-                            try {
-                                JSONObject accountLogParams = new JSONObject();
-                                accountLogParams.put("acct_num", currentBankAccount.acctNum);
-                                accountLogParams.put("log", currentBankAccount.log + "\t" + currentBankAccount.genTimestamp() + "  Transfer [$" + transferAmount + " to account " + transferAccountNumberString + "]\n");
-                            } catch (Exception ex) {
-
-                            }
-                        }
+                        currentBankAccount = serverBankAccountManager.transfer(currentBankAccount.acctNum, transferAccountNumber, transferAmount, currentBankAccount.pswd);
+                        message = "Transferred successfully!";
                     } catch (Exception e1) {
-                        message = "Server error!";
+                        if (e1.getMessage().equals("transfer")) message = "Error in transferring the money!";
                     }
                 }
 
@@ -428,23 +404,18 @@ public class BankAccountManagerGUI extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 String firstName = firstNameTextField.getText().trim();
                 String lastName = lastNameTextField.getText().trim();
-                String password = String.valueOf(passwordField.getPassword()).trim();
+                String password = String.valueOf(passwordField.getPassword());
                 boolean generatePassword = generatePasswordCheckBox.isSelected();
 
-                String title = "";
                 String message = "";
 
                 if (firstName.isEmpty()) {
-                    title = "Error!";
                     message = "First name cannot be empty!";
                 } else if (lastName.isEmpty()) {
-                    title = "Error!";
                     message = "Last name cannot be empty!";
                 } else if (!generatePassword && password.isEmpty()) {
-                    title = "Error!";
                     message = "Password cannot be empty!";
                 } else if (password.length() < 8) {
-                    title = "Error!";
                     message = "Password must be at least 8 characters";
                 } else {
                     BankAccount newBankAccount;
@@ -455,12 +426,13 @@ public class BankAccountManagerGUI extends JFrame {
                         newBankAccount.resetAcctNum();
                     }
 
-                    if (bankAccountManager.addAcct(newBankAccount)) {
-                        title = "Success!";
-                        message = "Account number: " + newBankAccount.getAcctNum() + "<br>" + "Password: " + newBankAccount.pswd;
-                    } else {
-                        title = "Error!";
-                        message = "Can't add more accounts! :(";
+                    try {
+                        serverBankAccountManager.createAccount(newBankAccount);
+                        currentBankAccount = newBankAccount;
+                        message = "Account created successfully! :)";
+                        dialogWindow("Account Number", "Your account number is: " + currentBankAccount.getAcctNum());
+                    } catch (Exception e1) {
+                        message = "Error creating new account!";
                     }
 
                     firstNameTextField.setText("");
@@ -469,7 +441,7 @@ public class BankAccountManagerGUI extends JFrame {
                     generatePasswordCheckBox.setSelected(false);
                     cardLayout.show(panel, ROOT_PANEL_ID);
                 }
-                dialogWindow(title, message);
+                registerMessageLabel.setText(message);
                 generatePasswordCheckBox.setSelected(false);
                 passwordField.setVisible(true);
             }
