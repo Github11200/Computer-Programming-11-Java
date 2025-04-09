@@ -78,6 +78,9 @@ public class ServerBankAccountManager {
                 put("amount", amount);
             }}));
 
+            System.out.println(acctNum);
+            System.out.println(password);
+            System.out.println(response.has("error"));
             if (response.has("error")) return null;
             return getAccount(acctNum, password);
         } catch (Exception e) {

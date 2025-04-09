@@ -589,7 +589,9 @@
                 <preferred-size width="150" height="35"/>
               </grid>
             </constraints>
-            <properties/>
+            <properties>
+              <font size="14"/>
+            </properties>
           </component>
           <component id="e08a2" class="javax.swing.JLabel" binding="changePasswordMessageLabel">
             <constraints>
@@ -688,7 +690,9 @@
                 <preferred-size width="150" height="35"/>
               </grid>
             </constraints>
-            <properties/>
+            <properties>
+              <columns value="0"/>
+            </properties>
           </component>
           <component id="24faa" class="javax.swing.JLabel" binding="passwordFieldLabel">
             <constraints>

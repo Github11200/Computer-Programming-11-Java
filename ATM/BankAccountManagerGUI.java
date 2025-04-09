@@ -135,6 +135,8 @@ public class BankAccountManagerGUI extends JFrame {
                     int accountNumber = Integer.parseInt(usernameTextField.getText());
                     String password = new String(passwordTextField.getPassword());
 
+                    System.out.println(password);
+
                     if (!serverBankAccountManager.accountExists(accountNumber)) throw new Exception("402");
                     else if (!serverBankAccountManager.checkPassword(accountNumber, password))
                         throw new Exception("401");
@@ -222,6 +224,7 @@ public class BankAccountManagerGUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 depositMessageLabel.setText("");
+                depositAmount.setValue(0.0);
                 cardLayout.show(panel, MAIN_PANEL_ID);
             }
         });
@@ -230,6 +233,7 @@ public class BankAccountManagerGUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 withdrawMessageLabel.setText("");
+                withdrawAmount.setValue(0.0);
                 cardLayout.show(panel, MAIN_PANEL_ID);
             }
         });
@@ -238,6 +242,8 @@ public class BankAccountManagerGUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 transferMessageLabel.setText("");
+                transferAmountSpinner.setValue(0.0);
+                transferAcountNumberTextField.setText("");
                 cardLayout.show(panel, MAIN_PANEL_ID);
             }
         });
@@ -259,6 +265,10 @@ public class BankAccountManagerGUI extends JFrame {
         changePasswordExitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                currentPasswordField.setText("");
+                newPasswordField.setText("");
+                confirmNewPasswordField.setText("");
+                changePasswordMessageLabel.setText("");
                 cardLayout.show(panel, MAIN_PANEL_ID);
             }
         });
@@ -267,6 +277,9 @@ public class BankAccountManagerGUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 registerMessageLabel.setText("");
+                firstNameTextField.setText("");
+                lastNameTextField.setText("");
+                passwordField.setText("");
                 cardLayout.show(panel, ROOT_PANEL_ID);
             }
         });
@@ -289,7 +302,8 @@ public class BankAccountManagerGUI extends JFrame {
                     if (depositRequest != null)
                         currentBankAccount = depositRequest;
 
-                    message = "Withdrawn successfully!";
+                    System.out.println(depositRequest);
+                    message = "Deposited successfully!";
                 } catch (Exception e1) {
                     message = "Server error!";
                 }
@@ -335,8 +349,15 @@ public class BankAccountManagerGUI extends JFrame {
                 if (currentBankAccount.checkPswd(currentPassword)) {
                     if (newPassword.isEmpty()) {
                         message = "Password cannot be empty!";
-                    } else if (newPassword.equals(newPasswordConfirmation)) {
+                    } else if (newPassword.length() < 8) {
+                        message = "Password must be at least 8 characters";
+                    } else if (!newPassword.equals(newPasswordConfirmation)) {
+                        message = "New password and new password confirmation do not match! :(";
+                    } else {
                         try {
+                            System.out.println(currentBankAccount.acctNum);
+                            System.out.println(currentPassword);
+                            System.out.println(newPassword);
                             currentBankAccount = serverBankAccountManager.changePassword(currentBankAccount.acctNum, currentPassword, newPassword);
                             message = "Password changed successfully! :)";
                         } catch (Exception e1) {
@@ -346,8 +367,6 @@ public class BankAccountManagerGUI extends JFrame {
                         currentPasswordField.setText("");
                         newPasswordField.setText("");
                         confirmNewPasswordField.setText("");
-                    } else {
-                        message = "New password and new password confirmation do not match! :(";
                     }
                 } else {
                     message = "Current password does not match! :(";
@@ -415,7 +434,7 @@ public class BankAccountManagerGUI extends JFrame {
                     message = "Last name cannot be empty!";
                 } else if (!generatePassword && password.isEmpty()) {
                     message = "Password cannot be empty!";
-                } else if (password.length() < 8) {
+                } else if (!generatePassword && password.length() < 8) {
                     message = "Password must be at least 8 characters";
                 } else {
                     BankAccount newBankAccount;
@@ -430,7 +449,9 @@ public class BankAccountManagerGUI extends JFrame {
                         serverBankAccountManager.createAccount(newBankAccount);
                         currentBankAccount = newBankAccount;
                         message = "Account created successfully! :)";
-                        dialogWindow("Account Number", "Your account number is: " + currentBankAccount.getAcctNum());
+                        String accountNumberInfo = "Your account number is: " + currentBankAccount.getAcctNum() + "<br />";
+                        String passwordInfo = "Your password is: " + currentBankAccount.pswd;
+                        dialogWindow("Account Number", accountNumberInfo + passwordInfo + "<br />Please note these down somewhere.");
                     } catch (Exception e1) {
                         message = "Error creating new account!";
                     }
